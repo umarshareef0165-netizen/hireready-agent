@@ -1,0 +1,42 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HireReady Agent — Tech Employment for Youth</title>
+<style>body{font-family:system-ui,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.5}textarea,input,select{width:100%;padding:.6rem;margin:.3rem 0}button{padding:.7rem 1.2rem;cursor:pointer}section{border:1px solid #ddd;border-radius:8px;padding:1rem;margin:1rem 0}.evidenced{color:green}.missing{color:#b00}.claimed{color:#a60}pre{white-space:pre-wrap;background:#f6f6f6;padding:1rem}</style></head>
+<body>
+<h1>HireReady Agent</h1>
+<p><b>Problem:</b> Final-year CS students learn theory but cannot show employers verifiable, job-ready evidence. Paste a real job description + your CV text + your real projects — the agent finds exactly what is missing, builds a dated plan, a verified portfolio, and a mock-interview loop.</p>
+<p><i>Mode: mock — deterministic skill extraction. No jobs are scraped, no employer matching, no placements, no certificates, no job guarantee. A skill is "evidenced" only when linked to a real project/task you supplied.</i></p>
+
+<section><h2>1. Skill-gap report + learning plan</h2>
+<label>Job description (paste a real one)</label><textarea id="jd" rows="5" placeholder="e.g. Python developer: Python, FastAPI, SQL, Docker, testing..."></textarea>
+<label>Your CV text</label><textarea id="cv" rows="5" placeholder="Paste your CV text..."></textarea>
+<label>Your real projects (one per line: Name | link | description)</label><textarea id="proj" rows="3" placeholder="FitTrack | https://github.com/... | Python fitness tracker with SQL"></textarea>
+<button onclick="gap()">Run gap agent</button><div id="gapOut"></div></section>
+
+<section><h2>2. Verified portfolio</h2><button onclick="port()">Build portfolio from the projects above</button><div id="portOut"></div></section>
+
+<section><h2>3. Mock interview (visible rubric)</h2>
+<label>Role</label><select id="role"><option>python</option><option>machine learning</option><option>full-stack</option><option>agentic ai</option></select>
+<button onclick="qs()">Load questions</button><div id="qOut"></div>
+<textarea id="ans" rows="4" placeholder="Answer the first question here, with a concrete project example..."></textarea>
+<button onclick="score()">Score my answer</button><div id="scoreOut"></div></section>
+
+<section><h2>4. Honest impact dashboard</h2><button onclick="dash()">Refresh counters</button><div id="dashOut"></div>
+<p>Counters count only real in-app actions in this deployment. They are never seeded as real users.</p></section>
+
+<script>
+async function post(p,b){const r=await fetch(p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});return r.json()}
+function projects(){return document.getElementById('proj').value.split('\n').filter(Boolean).map(l=>{const[x,y,z]=l.split('|');return{name:(x||'').trim(),link:(y||'').trim(),description:(z||'').trim()}})}
+async function gap(){const d=await post('/api/gap',{job_description:jd.value,cv_text:cv.value,projects:projects()});
+ gapOut.innerHTML='<p>'+d.gap.summary+'</p>'+d.gap.rows.map(r=>`<p class="${r.status.includes('evidenced')&&!r.status.includes('not')?'evidenced':r.status.includes('missing')?'missing':'claimed'}"><b>${r.skill}</b> — ${r.status} (${r.evidence})</p>`).join('')+'<h3>Learning plan</h3>'+d.plan.map(p=>`<p>${p.day}: ${p.skill} — ${p.task} <a href="${p.resource}" target="_blank">resource</a> <button onclick="done()">Mark done</button></p>`).join('')}
+async function done(){await post('/api/task/done',{});alert('Task counted.')}
+async function port(){const d=await post('/api/portfolio',{job_description:jd.value,cv_text:cv.value,projects:projects()});
+ portOut.innerHTML='<pre>'+JSON.stringify(d,null,2)+'</pre>'}
+let curQs=[];
+async function qs(){const d=await post('/api/interview/questions',{role:role.value});curQs=d.questions;
+ qOut.innerHTML=d.questions.map((q,i)=>`<p><b>Q${i+1}:</b> ${q.q}<br><i>Rubric keywords (visible): ${q.keywords.join(', ')}</i></p>`).join('')}
+async function score(){const d=await post('/api/interview/score',{role:role.value,index:0,answer:ans.value});
+ scoreOut.innerHTML=`<p><b>Score: ${d.score}/10</b></p><p>${d.feedback}</p>`}
+async function dash(){const d=await fetch('/api/dashboard').then(r=>r.json());
+ dashOut.innerHTML=`<p>Gap reports: ${d.gap_reports} · Portfolios: ${d.portfolios} · Interviews scored: ${d.interviews} · Tasks completed: ${d.tasks_completed}</p>`}
+dash();
+</script></body></html>
