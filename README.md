@@ -42,14 +42,12 @@ Try: JD "Python developer: Python, FastAPI, SQL, Docker", CV mentioning
 FitTrack in Python with SQL, project "FitTrack | https://github.com/... |
 Python fitness tracker with SQL" → Python + SQL evidenced, FastAPI + Docker missing.
 
-## Deploy (free host)
-Python stdlib only, no pip install. `Dockerfile` is included (runs
-`python3 src/server.py` on `$PORT`):
-- **Render (free):** New Web Service → connect this repo → Docker → deploy.
-  Set no secrets; the app works in mock mode.
-- **Any host with Python 3:** `PORT=8000 python3 src/server.py`.
-- After deploy, re-run the smoke test against the live URL before claiming
-  it is live, and update the submission draft with the real URL only.
+## Deploy — LIVE on Render
+Live demo: https://hireready-agent.onrender.com
+- Service hireready-agent, Docker, Free plan, region Oregon (US West), branch main, commit 3757a20, "Deploy succeeded" / "Live" on Oct 29, 2026, 5-point live test passed the same day (home, FitTrack gap, portfolio, interview 9/10, dashboard surviving reload).
+- Python stdlib only, no pip install. Local run: `python3 src/server.py` (http://localhost:8002/).
+- Card-free alternatives prepared in `docs/DEPLOY-CARD-FREE.md` (PythonAnywhere Beginner WSGI via `wsgi.py`, Vercel Hobby via `api/index.py`, gated Hugging Face Spaces Docker via `Dockerfile.hf`) were NOT used as the live deployment; the PythonAnywhere fallback was stopped after Render succeeded.
+- Live dashboard counters 1 / 1 / 1 / 0 at deploy time are builder test actions from the verified live test, NOT pilot users and NOT real students.
 
 ## Out of scope (deliberately)
 Job scraping, employer matching, paid placements, certificates, job guarantees,
@@ -59,12 +57,8 @@ AgentFoundry usage claims (see below), NGO partners.
 - **Mock mode:** skill extraction is deterministic keyword matching. A real-LLM
   adapter stub is in `src/real_llm.py` and is NOT wired in. Do not claim live AI
   until it is implemented, live-tested, and the README is updated.
-- **AgentFoundry:** the official flow says to build in the AgentFoundry IDE.
-  That step has NOT been done here and is NOT claimed. Verify via the welcome
-  email / GitHub submission form whether a local repo + AgentFoundry link
-  suffices, or the build must live in AgentFoundry.
-- **NGO partner:** none invented, none claimed. The official page names no
-  mandatory partner.
+- **AgentFoundry:** JUDGING.md lists "Built using AgentFoundry (AF), the official IDE" under Eligibility, so a real AgentFoundry project step is in progress and is NOT claimed yet. Do not claim "built in AgentFoundry" on the basis of this local repo alone.
+- **NGO partner:** none invented, none claimed. The welcome email says to sign up with a local NGO/partner of choice, but the official page / JUDGING.md fetched Oct 29, 2026 contain no mandatory partner field or evidence requirement — see `~/workspace/code-for-a-billion/TC-RESEARCH-2026-10-29.md` and candidate-only list in `docs/NGO-CANDIDATES.md` (not in this repo).
 - **Proven impact:** in an 18-day window this will be thin. Report only real
   counts from the dashboard, never inflated numbers.
 - **No win is guaranteed.**
